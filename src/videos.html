@@ -1,0 +1,53 @@
+<!-- breadcumb-area -->
+<div class="breadcumb-area animate__animated animate__fadeInDown" style="background-image: url(assets/images/breadcrumb/gallery.jpg);">
+	<div class="container">
+	  <div class="row">
+		<div class="col-md-12 txtc text-center ccase">
+		  <div class="brpt">
+			<h2>Videos</h2>
+		  </div>
+		  <div class="breadcumb-inner">
+			<ul>
+			  <li><a onclick="load('home.html');">Home</a></li>
+			  <li><i class="fas fa-angle-right"></i></li>
+			  <li>Videos</li>
+			</ul>
+		  </div>
+		</div>
+	  </div>
+	</div>
+  </div>
+
+<!-- wirr_project_area -->
+<div class="wirr_project_area">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="witr_section_title">
+					<div class="witr_section_title_inner text-center">
+						<h3>Some of Our Products & Events Videos</h3>		
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="clearfix kicuakta">
+					<div class="portfolio_nav  wittr_pfilter_menu">
+						<ul id="filter" class="filter_menu ">
+							<!-- <li class="current_menu_item" data-filter="*">All Products</li> -->
+							{{video-tabs}}
+						</ul>
+					</div>
+				</div>
+				<div class=" em_load_videos pstyle_1 em_port_container">					
+					<div class="prot_wrap row">
+						{{gallery-videos}}
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+<script src="assets/js/theme.js"></script>
