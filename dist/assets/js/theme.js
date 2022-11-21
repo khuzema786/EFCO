@@ -203,7 +203,7 @@
 
 					itemSelector: '.grid-item',
 
-					filter: '.Buffalo',
+					filter: '.buffalo',
 
 					resizesContainer: true,
 

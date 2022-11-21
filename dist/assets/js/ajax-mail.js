@@ -140,7 +140,7 @@ $(function () {
           companyName: $("#CompanyName").val(),
           companyLocation: $("#CompanyLocation").val(),
           message: $("#Message").val(),
-          _subject:"Web Distributor Form!",
+          _subject:"Web Contact Form!",
           _autoresponse:"We have recieved your request, our team will get back to you shortly.",
           _template:"table",
           _cc: "efcofood@gmail.com"

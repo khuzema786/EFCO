@@ -31,8 +31,7 @@ const options = {
 const main = async () => {
   const products = require("./xlsx-reader").getProducts(`src/xlsx/products.xlsx`);
   const news = require("./xlsx-reader").getNews(`src/xlsx/news.xlsx`);
-  const companies = require("./xlsx-reader").getCompanies(`src/xlsx/companies.xlsx`);
-  const videos = require("./xlsx-reader").getVideos(`src/xlsx/videos.xlsx`);
+  const companies = require("./xlsx-reader").getNews(`src/xlsx/companies.xlsx`);
 
   const files = [];
   const processDir = async (dirname) => {
@@ -65,6 +64,11 @@ const main = async () => {
   );
   let galleryImgFiles = files.filter((file) =>
     file.match(/dist\/assets\/images\/media\/images\/.*(\.png|\.jpg|\.jpeg)$/gm)
+  );
+  let galleryVidFiles = files.map((file) => [file.match(/dist\/assets\/images\/media\/videos\/.*(\.mp4|\.mov|\.avi)$/gm) || (file.match(/dist\/assets\/images\/media\/videos\//gm) && !file.match(/dist\/assets\/images\/media\/videos\/.*(\.mp4|\.mov|\.avi|\.png|\.jpg|\.jpeg)$/gm)) ? file : "", file.match(/dist\/assets\/images\/media\/videos\//gm) && !file.match(/dist\/assets\/images\/media\/videos\/.*(\.mp4|\.mov|\.avi|\.png|\.jpg|\.jpeg)$/gm)]
+  ).filter(([file]) => file !== "");
+  let galleryVidThumbnailFiles = files.filter((file) =>
+    file.match(/dist\/assets\/images\/media\/videos\/.*(\.png|\.jpg|\.jpeg)$/gm)
   );
   let portfolioImgFiles = files.filter((file) =>
     file.match(/dist\/assets\/images\/scroller\/.*(\.png|\.jpg|\.jpeg)$/gm)
@@ -218,7 +222,16 @@ const main = async () => {
       )
       .replace(
         "{{video-tabs}}",
-        Array.from(new Set(videos.map(({ Category }) => Category)))
+        Array.from(
+          new Set(
+            galleryVidFiles.map(([gallery]) => {
+              let filterClass = gallery
+                .split("/")
+              [gallery.split("/").length - 2].split("-")[1].toLowerCase();
+              return filterClass;
+            })
+          )
+        )
           .map(
             (filterClass, idx) =>
               `<li ${idx === 0 ? 'class="current_menu_item"' : ""
@@ -228,15 +241,37 @@ const main = async () => {
       )
       .replace(
         "{{gallery-videos}}",
-        videos
-          .map(({ Category, Links }) =>
-            `<div class="col-lg-6 grid-item col-md-6 col-sm-12 ${Category} witr_all_mb_30">
-              <div class="single_protfolio">
-                <div class="prot_thumb">
-                  <iframe width="100%" height="400px" frameborder="0" allowfullscreen src="https://www.youtube.com/embed/${Links}"></iframe>
-                </div>				
-              </div>
-            </div>`).join("\n"));
+        galleryVidFiles
+          .map(([gallery, isYoutube]) => {
+            let filterClass = gallery.split("/")[gallery.split("/").length - 2];
+            let thumbnail = !isYoutube && galleryVidThumbnailFiles.find(
+              (thumbnail) =>
+                /(.*)(\.png|\.jpg|\.jpeg)$/gm.exec(thumbnail)[1] ===
+                /(.*)(\.mp4|\.mov|\.avi)$/gm.exec(gallery)[1]
+            );
+            if (!isYoutube && !thumbnail)
+              thumbnail = galleryVidThumbnailFiles.find((thumbnail) =>
+                thumbnail.match(
+                  new RegExp(filterClass + "/default(.png|.jpg|.jpeg)$", "gm")
+                )
+              );
+            return `<div class="col-lg-6 grid-item col-md-6 col-sm-12 ${filterClass.split("-")[1].toLowerCase()} witr_all_mb_30">
+        <div class="single_protfolio">
+          <div class="prot_thumb">
+            ${isYoutube ?
+                `<iframe width="100%" height="400px" frameborder="0" allowfullscreen src="https://www.youtube.com/embed/${gallery.split("/")[gallery.split("/").length - 1].split("-")[1]}"></iframe>` :
+                `<video width="100%" height="400px" controls preload="auto" ${thumbnail
+                  ? `poster="assets/images/media/videos/${filterClass}/${thumbnail.split("/")[thumbnail.split("/").length - 1]
+                  }"`
+                  : ""
+                } style="object-fit: cover;">
+              <source src="assets/images/media/videos/${filterClass}/${gallery.split("/")[gallery.split("/").length - 1]
+                }"type="video/mp4">
+            </video>`}
+          </div>				
+        </div>
+      </div>`;
+          }).join("\n"));
     if (isDevelopment) {
       await writeFile(htmlFiles[i], data, { encoding: "utf8" });
     } else {
@@ -260,23 +295,13 @@ const main = async () => {
   }
 
   for (let i = 0; i < jsFiles.length; i++) {
-    let data = await readFile(jsFiles[i]);
-    data = data.toString().replace('{{image-filter}}', Array.from(
-      new Set(
-        galleryImgFiles.map((gallery) => {
-          let filterClass = gallery
-            .split("/")
-          [gallery.split("/").length - 2].split("-")[1].toLowerCase();
-          return filterClass;
-        })
-      )
-    )[0]).replace('{{video-filter}}', Array.from(new Set(videos.map(({ Category }) => Category)))[0])
+    const data = await readFile(jsFiles[i]);
     if (isDevelopment) {
-      await writeFile(jsFiles[i], data, {
+      await writeFile(jsFiles[i], data.toString(), {
         encoding: "utf8",
       });
     } else {
-      await writeFile(jsFiles[i], jsminify(data).code, {
+      await writeFile(jsFiles[i], jsminify(data.toString()).code, {
         encoding: "utf8",
       });
     }

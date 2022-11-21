@@ -162,7 +162,7 @@
 
 					itemSelector: '.grid-item',
 
-					filter: '.{{image-filter}}',
+					filter: '.buffalo',
 
 					resizesContainer: true,
 
@@ -203,7 +203,7 @@
 
 					itemSelector: '.grid-item',
 
-					filter: '.{{video-filter}}',
+					filter: '.buffalo',
 
 					resizesContainer: true,
 

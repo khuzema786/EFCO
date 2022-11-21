@@ -89,28 +89,4 @@ const getCompanies = (dirname) => {
   return reader.utils.sheet_to_json(file.Sheets[file.SheetNames[0]]);
 };
 
-const getVideos = (dirname) => {
-  const file = reader.readFile(dirname, {
-    type: 'binary',
-    cellDates: true,
-    cellNF: false,
-    cellText: false
-  });
-
-  let videos = reader.utils.sheet_to_json(file.Sheets[file.SheetNames[0]]);
-  
-  let i = 0;
-  while(i < videos.length) {
-    if(videos[i]["Category"]) {
-      const Category = videos[i]["Category"];
-      while(++i < videos.length && !videos[i]["Category"]) {
-        videos[i] = { ...videos[i], Category }
-      }
-    }
-  }
-console.log(videos)
-  return videos;
-};
-
-
-module.exports = { getProducts, getNews, getCompanies, getVideos }
+module.exports = { getProducts, getNews, getCompanies }
